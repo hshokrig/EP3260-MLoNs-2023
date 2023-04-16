@@ -1,0 +1,119 @@
+clear all 
+st=1;
+randn('state',st);
+rand('state',st);
+
+%M = importdata(MNIST-new.csv)
+M0=readmatrix('MNIST-csv.csv');
+Y=readmatrix('labels.csv');
+M=M0/255;
+%Y=labels;
+N=10; %number of users
+N1=6000;
+n=784; %number of inputs
+%gamma3
+%gamma=0.1; %step size
+% p=0; %probability
+% p1=p*10;
+% v=2; %variance
+% v1=v*10;
+% n1=p*N; %number of workers adding the noise
+w(:,1)=zeros(n,1);
+k_max=100;
+lambda=5;
+lambda1=lambda*10;
+
+
+
+for k=1:k_max
+    %gamma1
+    gamma=1/k;
+    %gamma2
+    %gamma=(0.9)^k;
+    
+   for i=1:N
+        %grad=0;
+        
+       for j=1:N1
+          %obj=0;
+          %obj=obj+(norm(w'*M(j+(i-1)*N1,:)-M(j+(i-1)*N1,1),2))^2;
+          %obj(i,:)=obj/N1;
+          obj1=1-(Y(j+(i-1)*N1,1)*w(:,k)'*M(j+(i-1)*N1,:)');
+         
+          if obj1<=0
+              grad_user{i}(:,j)=zeros(n,1);
+              obj_user(j,i)=0;
+          else grad_user{i}(:,j)=-Y(j+(i-1)*N1,1)*M(j+(i-1)*N1,:)';
+              obj_user(j,i)=obj1;
+              
+          %grad=grad+(2*(w(:,k)'*M(j+(i-1)*N1,:)'-Y(j+(i-1)*N1,1))*M(j+(i-1)*N1,:)');
+          
+          end
+       end
+       grad_user_all{k}(:,i)=(sum(grad_user{i}'))/N1;
+       obj_user_all(k,i)=(sum(obj_user(:,i)))/N1;
+        %obj(i,:)=obj/N1;
+        %grad1{k}(:,i)=grad/N1; %gradients for each user at iteration k
+       
+   end
+   %obj(k,:)=(sum(obj_user_all(k,:)))/N;
+   obj(k,:)=(sum(obj_user_all(k,:)))/N+(lambda*w(:,k)'*w(:,k));
+   % grad(:,k)=(sum(grad_user_all{k}'))/N;
+    
+   % l=randperm(N);
+   % 
+   % for i=1:n1
+   %     e=sqrt(v)*randn(n,1);
+   %     grad_user_all{k}(:,l(:,i))=grad_user_all{k}(:,l(:,i))+e;
+   % 
+   % end
+    grad_user_all{k};
+    
+    %grad(:,k)=(sum(grad_user_all{k}'))/N; % full gradient vector at the central node without regularizer
+    
+    grad(:,k)=(sum(grad_user_all{k}'))/N;
+    grad_new(:,k)=grad(:,k)+(lambda*2*w(:,k));
+    %grad_all_reg(:,k)=grad_all(:,k)+lambda*2*w(:,k);% full gradient vector at the central node
+    
+    w(:,k+1)=w(:,k)-gamma*grad_new(:,k);
+   
+    
+    norm_w(k,:)=norm(w(:,k),2);
+   k 
+      
+end
+
+
+T=[1:1:k_max]';
+
+
+line_width=1.5; label_FontSize=15; legend_FontSize=12; small_markersize=4; line_width_big=1.5;large_markersize=8;
+%semilogy(T,error,'r-','linewidth',line_width,'markersize',large_markersize);hold on;
+
+%semilogy(T,norm_w,'g','linewidth',line_width,'markersize',large_markersize);hold on;
+semilogy(T,obj,'r','linewidth',line_width,'markersize',large_markersize);hold on;
+%plot(T,obj,'k','linewidth',line_width,'markersize',large_markersize);hold on;
+
+%ylim([0.00005 1000]);
+grid on; zoom on; 
+
+box on;
+get(gca);
+set(gca,'fontsize',label_FontSize);
+
+xlabel('Iteration number(k)','FontSize',label_FontSize)
+%ylabel('$\frac{\|\lambda^k-\lambda^{\star}\|}{\|\lambda^{\star}\|}$','Interpreter','latex','FontSize',label_FontSize)
+%ylabel('$\|w^{(k)}\|$','Interpreter','latex','FontSize',label_FontSize)
+%ylabel('$\|w^{(k)}\|$','Interpreter','latex','FontSize',label_FontSize)
+ylabel('Loss function','FontSize',label_FontSize)
+%legend({'$\gamma_k=(c/\mu_h)/(k+1)$','$\gamma_k=(c/\mu_h)/(k+1)^{0.5}$','$\gamma_k=0.5/L_h$','$\gamma_k=(c/\mu_h)/(k+1)^{\log k/k}$','$\gamma_k=1/L_h$'},'Interpreter','latex','FontSize',label_FontSize,1)
+figure_name=['CA5_SVM_reg_part_a.eps']; %st=3
+print('-depsc',figure_name)
+saveas(gcf,'CA5_SVM_reg_part_a.fig')
+
+done_ = 1;
+
+save(sprintf('CA5_SVM_reg_part_a_gamma1_st_%d_k_max_%d_lambda_%d.mat',st,k_max,lambda1)) %myfile1 for residual vs itter
+
+
+

@@ -1,0 +1,76 @@
+clear all
+
+
+% load CA5_SVM_reg_part_b_decentralized_st_1_k_max_100_lambda_10
+% SS1=obj;
+
+load CA5_SVM_reg_part_b_ADMM_st_1_k_max_100_k1max_1_lambda_10_c_1
+SS1=obj;
+
+load CA5_SVM_reg_part_b_ADMM_st_1_k_max_100_k1max_2_lambda_10_c_1
+SS2=obj;
+
+load CA5_SVM_reg_part_b_ADMM_st_1_k_max_100_k1max_5_lambda_10_c_1
+SS3=obj;
+
+% load CA4_SVM_st_1_p1_5_v1_80_k_max_100
+% SS4=norm_w;
+% 
+% load CA4_SVM_st_1_p1_5_v1_100_k_max_100
+% SS5=norm_w;
+
+
+
+
+T1=[0:1:k-1]';
+line_width=1.5; label_FontSize=20; legend_FontSize=12; small_markersize=2; line_width_big=3.5;large_markersize=8;
+%semilogy(T,error,'k-','linewidth',line_width,'markersize',large_markersize);hold on;
+semilogy(T1,SS1,'b-','linewidth',line_width,'markersize',small_markersize);hold on;
+semilogy(T1,SS2,'r--','linewidth',line_width,'markersize',small_markersize);hold on;
+semilogy(T1,SS3,'k-.','linewidth',line_width,'markersize',small_markersize);hold on;
+%semilogy(T1,SS4,'m:','linewidth',line_width,'markersize',small_markersize);hold on;
+%plot(T1,SS5,'g-','linewidth',line_width,'markersize',small_markersize);hold on;
+%plot(T1,SS6,'y--','linewidth',line_width,'markersize',small_markersize);hold on;
+%semilogy(T1,SS5,'r-','linewidth',line_width,'markersize',small_markersize);hold on;
+
+grid on; zoom on; 
+%xlim([0 50]);
+ylim([10^-2 10^3]);%axis([0 10 17 31])
+box on;
+get(gca);
+set(gca,'fontsize',label_FontSize);
+%set(gca,'linewidth',line_width);
+%set(gca,'markersize',large_markersize);
+%get(gca);
+%set(gca,'linewidth',line_width);
+%set(gca,'markersize',large_markersize);
+%set(gca,'linewidth',line_width);
+%set(gca,'fontsize',label_FontSize,'linewidth',line_width,'markersize',large_markersize);
+%legend({'$\epsilon=0.5,\,\,\lambda^{(0)}=1000$'},'Interpreter','latex',1)
+%legend({'$n_2=2$'},{'$n_2=1$'},{'$n_2=3$'},{'$n_2=5$'},{'$n_2=10$'},'Interpreter','latex',1)
+
+           
+%legend({'$\gamma=0.1/L_h$','$\gamma=0.5/L_h$','$\gamma=1/L_h$','$\textrm{UB for}\,\gamma=0.1/L_h$','$\textrm{UB for}\,\gamma=0.5/L_h$','$\textrm{UB for}\,\gamma=1/L_h$','$\textrm{conv.rate for}\,\gamma=0.1/L_h$','$\textrm{conv.rate for}\,\gamma=0.5/L_h$','$\textrm{conv.rate for}\,\gamma=1/L_h$'},'Interpreter','latex',1)
+%legend({'$\textrm{primal convergence:}\, \, \gamma_k=0.001$','$\textrm{primal convergence:}\,\, \gamma_k=1/(k+1)$','$\textrm{dual convergence:}\, \, \gamma_k=0.001$','$\textrm{dual convergence:}\,\, \gamma_k=1/(k+1)$'},'Interpreter','latex','FontSize',label_FontSize,1)
+legend('$\textrm{ADMM, inner loops=1}$','$\textrm{ADMM, inner loops=2}$','$\textrm{ADMM, inner loops=5}$','Interpreter','latex','FontSize',label_FontSize,'Location','northeast')
+%legend('$0$','$1$','$2$','$3$','$4$','$5$','Interpreter','latex','FontSize',label_FontSize,1)
+%legend({'$\gamma=0.1/L_h$','$\gamma=0.5/L_h$','$\gamma=1/L_h$','$\textrm{UB for}\,\gamma=0.1/L_h$','$\textrm{UB for}\,\gamma=0.5/L_h$','$\textrm{UB for}\,\gamma=1/L_h$'},'Interpreter','latex',1)
+%legend({'$\gamma=\frac{1.999}{L}, \ \rho(\epsilon)$','$\textrm{convergence rate}$','$\gamma=\frac{1}{L}, \ \rho(\epsilon)$','$\textrm{conv rate}$','$\gamma=\frac{1.999}{L}, \ \rho(\epsilon)$','$\textrm{conv rate}$'},'Interpreter','latex',4)
+ %old:  legend({'$\textrm{blue}, \ \gamma=\frac{0.1}{L}, \ \rho(\epsilon)$','$\textrm{convergence rate}$','$\textrm{red}, \ \gamma=\frac{1}{L}, \ \rho(\epsilon)$','$\textrm{conv rate}$','$\textrm{green}, \ \gamma=\frac{1.999}{L}, \ \rho(\epsilon)$','$\textrm{conv rate}$'},'Interpreter','latex',4)
+%legend({'$\gamma=\frac{0.5}{L}$','$\gamma=\frac{0.8}{L}$','$\gamma=\frac{1}{L}$','$\gamma=\frac{1.2}{L}$','$\gamma=\frac{1.4}{L}$','$\gamma=\frac{1.6}{L}$','$\gamma=\frac{1.8}{L}$'},'Interpreter','latex',1)
+%legend('M = 2','M = 4','M = 8',1)mod(lambda(k)-lambda*)
+xlabel('$\textrm{Iteration number} \ (k)$','Interpreter','latex','FontSize',label_FontSize)
+
+
+%ylabel('$\min_{i\in\{0,\ldots,k\}} \ \|\tilde{\mathbf{y}}^{(i)}-\mathbf{y}^{\star}\|$','Interpreter','latex','FontSize',label_FontSize)
+ylabel('$\textrm{Loss function}$','Interpreter','latex','FontSize',label_FontSize)
+%title('$\textrm{Convergence} \  \textrm{of} \ \|w^{(k)}\| \ \textrm{against} \ \sigma^2 \ \textrm{with} \ p=0.5$','Interpreter','latex','FontSize',label_FontSize)
+
+figure_name=['CA5_SVM_reg_part_b_ADMM_comparison_inner_loops.eps']; %st=3
+print('-depsc',figure_name)
+saveas(gcf,'CA5_SVM_reg_part_b_ADMM_comparison_inner_loops.fig')
+
+done_ = 1;
+
+%save(sprintf('tradeoff_ball_conv_rate_gamma_case1_m6_n1_b5',st,m))
+save(sprintf('CA5_SVM_reg_part_b_ADMM_comparison_inner_loops_st_%d.mat',st))

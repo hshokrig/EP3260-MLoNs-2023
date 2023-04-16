@@ -1,0 +1,157 @@
+clear all 
+st=1;
+randn('state',st);
+rand('state',st);
+
+%M = importdata(MNIST-new.csv)
+M0=readmatrix('MNIST-csv.csv');
+Y=readmatrix('labels.csv');
+M=M0/255;
+%Y=labels;
+N=10; %number of users
+N1=6000;
+n=784; %number of inputs
+c=0.1;
+c1=c*10;
+%gamma=0.1; %inner loop step size
+%p=0; %probability
+%p1=p*10;
+%v=2; %variance
+%v1=v*10;
+%n1=p*N; %number of workers adding the noise
+for i=1:N
+w{1}(:,i)=zeros(n,1);
+p{1}(:,i)=zeros(n,1);
+end
+WE=[0.9 0 0 0 0.1 0 0 0 0 0;0 0.9 0 0 0.1 0 0 0 0 0;0 0 0.9 0 0.1 0 0 0 0 0;0 0 0 0.9 0.1 0 0 0 0 0;0.1 0.1 0.1 0.1 0.5 0.1 0 0 0 0;0 0 0 0 0.1 0.5 0.1 0.1 0.1 0.1;0 0 0 0 0 0.1 0.9 0 0 0;0 0 0 0 0 0.1 0 0.9 0 0;0 0 0 0 0 0.1 0 0 0.9 0;0 0 0 0 0 0.1 0 0 0 0.9];
+
+%WE=[1 0 0 0 -1 0 0 0 0 0;0 1 0 0 -1 0 0 0 0 0;0 0 1 0 -1 0 0 0 0 0;0 0 0 1 -1 0 0 0 0 0;-1 -1 -1 -1 5 -1 0 0 0 0;0 0 0 0 -1 5 -1 -1 -1 -1;0 0 0 0 0 -1 1 0 0 0;0 0 0 0 0 -1 0 1 0 0;0 0 0 0 0 -1 0 0 1 0;0 0 0 0 0 -1 0 0 0 1];
+k_max=100;
+k1_max=5;
+lambda=1;
+lambda1=lambda*10;
+
+
+
+for k=1:k_max
+    %gamma=1/k;
+    %gamma=(0.9)^k;
+    for i=1:N
+   
+    m{k}(:,i)=(1/WE(i,i))*(WE(i,1)*w{k}(:,1)+WE(i,2)*w{k}(:,2)+WE(i,3)*w{k}(:,3)+WE(i,4)*w{k}(:,4)+WE(i,5)*w{k}(:,5)+WE(i,6)*w{k}(:,6)+WE(i,7)*w{k}(:,7)+WE(i,8)*w{k}(:,8)+WE(i,9)*w{k}(:,9)+WE(i,10)*w{k}(:,10));
+   end
+    for i=1:N
+       WW=WE(i,1)^2+WE(i,2)^2+WE(i,3)^2+WE(i,4)^2+WE(i,5)^2+WE(i,6)^2+WE(i,7)^2+WE(i,8)^2+WE(i,9)^2+WE(i,10)^2;
+        %grad=0;
+        %w_bar{k}(:,i)=WE(i,1)*w{k}(:,1)+WE(i,2)*w{k}(:,2)+WE(i,3)*w{k}(:,3)+WE(i,4)*w{k}(:,4)+WE(i,5)*w{k}(:,5)+WE(i,6)*w{k}(:,6)+WE(i,7)*w{k}(:,7)+WE(i,8)*w{k}(:,8)+WE(i,9)*w{k}(:,9)+WE(i,10)*w{k}(:,10);
+        %m{k}(:,i)=(1/WE(i,i))*(WE(i,1)*w{k}(:,1)+WE(i,2)*w{k}(:,2)+WE(i,3)*w{k}(:,3)+WE(i,4)*w{k}(:,4)+WE(i,5)*w{k}(:,5)+WE(i,6)*w{k}(:,6)+WE(i,7)*w{k}(:,7)+WE(i,8)*w{k}(:,8)+WE(i,9)*w{k}(:,9)+WE(i,10)*w{k}(:,10));
+        A{k}(:,i)=WE(i,1)*p{k}(:,1)+WE(i,2)*p{k}(:,2)+WE(i,3)*p{k}(:,3)+WE(i,4)*p{k}(:,4)+WE(i,5)*p{k}(:,5)+WE(i,6)*p{k}(:,6)+WE(i,7)*p{k}(:,7)+WE(i,8)*p{k}(:,8)+WE(i,9)*p{k}(:,9)+WE(i,10)*p{k}(:,10);
+        B{k}(:,i)=c*(WE(i,1)*m{k}(:,1)+WE(i,2)*m{k}(:,2)+WE(i,3)*m{k}(:,3)+WE(i,4)*m{k}(:,4)+WE(i,5)*m{k}(:,5)+WE(i,6)*m{k}(:,6)+WE(i,7)*m{k}(:,7)+WE(i,8)*m{k}(:,8)+WE(i,9)*m{k}(:,9)+WE(i,10)*m{k}(:,10));
+        C{k}(:,i)=c*WW*w{k}(:,i);
+        
+        w_inner{1}=w{1};
+        for k1=1:k1_max
+            gamma=1/k1;
+        for j=1:N1
+          %obj=0;
+          %obj=obj+(norm(w'*M(j+(i-1)*N1,:)-M(j+(i-1)*N1,1),2))^2;
+          %obj(i,:)=obj/N1;
+          %obj1=1-(Y(j+(i-1)*N1,1)*w(:,k)'*M(j+(i-1)*N1,:)');
+          %w_bar{k}(:,i)=WE(i,1)*w{k}(:,1)+WE(i,2)*w{k}(:,2)+WE(i,3)*w{k}(:,3)+WE(i,4)*w{k}(:,4)+WE(i,5)*w{k}(:,5)+WE(i,6)*w{k}(:,6)+WE(i,7)*w{k}(:,7)+WE(i,8)*w{k}(:,8)+WE(i,9)*w{k}(:,9)+WE(i,10)*w{k}(:,10);
+          %grad_reg=lambda*2*w_bar{k}(:,j);
+          %reg=lambda*w{k}(:,j)'*w{k}(:,j);
+          obj1=1-(Y(j+(i-1)*N1,1)*w_inner{k1}(:,i)'*M(j+(i-1)*N1,:)');
+          
+          if obj1<=0
+              grad_user{i}(:,j)=zeros(n,1);
+             % grad_user{i}(:,j)=grad_reg;
+              obj_user(j,i)=0;
+              %obj_user(j,i)=reg;
+          else grad_user{i}(:,j)=-Y(j+(i-1)*N1,1)*M(j+(i-1)*N1,:)';
+              obj_user(j,i)=obj1;
+              
+              
+          %grad=grad+(2*(w(:,k)'*M(j+(i-1)*N1,:)'-Y(j+(i-1)*N1,1))*M(j+(i-1)*N1,:)');
+          
+          end
+       end
+       
+       grad_reg=lambda*2*w_inner{k1}(:,i);
+       grad_user_all_no_reg{k1}(:,i)=sum(grad_user{i}')/N1;
+       grad_user_all{k1}(:,i)=grad_user_all_no_reg{k1}(:,i)+grad_reg;
+ 
+       
+        w_inner{k1+1}(:,i)=w_inner{k1}(:,i)-gamma*(grad_user_all{k1}(:,i)+A{k}(:,i)-B{k}(:,i)-C{k}(:,i)+c*WW*w_inner{k1}(:,i));
+       end
+      % w{k+1}(:,i)=w_bar{k}(:,i)-(gamma*grad_user_all{k}(:,i));
+       reg=lambda*w{k}(:,i)'*w{k}(:,i);
+       obj_user_all(k,i)=(sum(obj_user(:,i)))/N1+reg;
+        %obj(i,:)=obj/N1;
+        %grad1{k}(:,i)=grad/N1; %gradients for each user at iteration k
+       
+   end
+   w{k+1}=w_inner{k1+1};
+   p{k+1}=p{k}+c*m{k};
+   obj(k,:)=(sum(obj_user_all(k,:)))/N;
+   %obj(k,:)=(sum(obj_user_all(k,:)))/N+(lambda*w(:,k)'*w(:,k));
+   % grad(:,k)=(sum(grad_user_all{k}'))/N;
+    
+   %l=randperm(N);
+    %  adding an error
+   % for i=1:n1
+   %     e=sqrt(v)*randn(n,1);
+   %     grad_user_all{k}(:,l(:,i))=grad_user_all{k}(:,l(:,i))+e;
+   % 
+   % end
+                         % grad_user_all{k};
+    
+    %grad(:,k)=(sum(grad_user_all{k}'))/N; % full gradient vector at the central node without regularizer
+    
+    %grad(:,k)=(sum(grad_user_all{k}'))/N;
+    %grad_new(:,k)=grad(:,k)+(lambda*2*w(:,k));
+    %grad_all_reg(:,k)=grad_all(:,k)+lambda*2*w(:,k);% full gradient vector at the central node
+    
+    %w(:,k+1)=w(:,k)-gamma*grad_new(:,k);
+   
+    
+    %norm_w(k,:)=norm(w(:,k),2);
+   k 
+      
+end
+
+
+T=[1:1:k_max]';
+
+
+line_width=1.5; label_FontSize=15; legend_FontSize=12; small_markersize=4; line_width_big=1.5;large_markersize=8;
+%semilogy(T,error,'r-','linewidth',line_width,'markersize',large_markersize);hold on;
+
+%semilogy(T,norm_w,'g','linewidth',line_width,'markersize',large_markersize);hold on;
+semilogy(T,obj,'b','linewidth',line_width,'markersize',large_markersize);hold on;
+%plot(T,obj,'k','linewidth',line_width,'markersize',large_markersize);hold on;
+xlim([1 100]);
+%ylim([0.00005 1000]);
+grid on; zoom on; 
+
+box on;
+get(gca);
+set(gca,'fontsize',label_FontSize);
+
+xlabel('Iteration number(k)','FontSize',label_FontSize)
+%ylabel('$\frac{\|\lambda^k-\lambda^{\star}\|}{\|\lambda^{\star}\|}$','Interpreter','latex','FontSize',label_FontSize)
+%ylabel('$\|w^{(k)}\|$','Interpreter','latex','FontSize',label_FontSize)
+%ylabel('$\|w^{(k)}\|$','Interpreter','latex','FontSize',label_FontSize)
+ylabel('Loss function','FontSize',label_FontSize)
+%legend({'$\gamma_k=(c/\mu_h)/(k+1)$','$\gamma_k=(c/\mu_h)/(k+1)^{0.5}$','$\gamma_k=0.5/L_h$','$\gamma_k=(c/\mu_h)/(k+1)^{\log k/k}$','$\gamma_k=1/L_h$'},'Interpreter','latex','FontSize',label_FontSize,1)
+
+figure_name=['CA5_SVM_reg_part_b_ADMM.eps']; %st=3
+print('-depsc',figure_name)
+saveas(gcf,'CA5_SVM_reg_part_b_ADMM.fig')
+
+done_ = 1;
+
+
+save(sprintf('CA5_SVM_reg_part_b_ADMM_st_%d_k_max_%d_k1max_%d_lambda_%d_c_%d.mat',st,k_max,k1_max,lambda1,c1)) %myfile1 for residual vs itter
+
+
+
